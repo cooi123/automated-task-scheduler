@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import {TasksPage} from "./pages/TasksPage";
 import {sendGPT} from "./api/OpenAI";
 import CalendarPage from "./pages/CalendarPage";
+import {AllTasksPage} from "./pages/AllTasksPage";
 function App() {
   const session = useSession();
   const supabaseClient = useSupabaseClient();
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/" element={<TasksPage />} />
           <Route path="/calendar" element={<CalendarPage />} />
+          <Route path="alltasks" element={<AllTasksPage />} />
         </Routes>
       </Router>
 
