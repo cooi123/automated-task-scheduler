@@ -22,6 +22,9 @@ function NavBar({username, onLogin, onLogout}: NavBarProps) {
             <a href="/" className="hover:text-gray-400">
               Add Tasks
             </a>
+            <a href="/allTasks" className="hover:text-gray-400">
+              All Tasks
+            </a>
             <a href="/calendar" className="hover:text-gray-400">
               Calendar
             </a>
