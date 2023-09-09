@@ -35,38 +35,6 @@ async function insertEventToCalendar(token: string, events: GoogleEvent[]) {
   events.map((event) => scheduleEvent(token, event));
 }
 
-async function getAllTasks(token: string) {
-  const taskLists = await getAllTaskLists(token).then((res) => res.items);
-  console.log(taskLists);
-  const lists: GoogleTaskList[] = taskLists.map((taskList: any) => ({
-    id: taskList.id,
-    title: taskList.title,
-  }));
-  const convertToCategory = lists.map((list) =>
-    getAllTasksFromCategory(token, list.id)
-  );
-  const tasks = await Promise.all(convertToCategory);
-  console.log(tasks);
-  const categorisedTask: Task[] = tasks.flatMap((task, index) =>
-    task.items.map((item: any) => {
-      const additionalInfo = item.notes
-        ? {
-            urgency: item.notes.urgency,
-            estimatHourToComplete: item.notes.estimatHourToComplete,
-          }
-        : {};
-
-      return {
-        title: item.title,
-        category: lists[index].title,
-        due: item.due,
-        ...additionalInfo,
-      };
-    })
-  );
-  return await categorisedTask;
-}
-
 export async function addTask(token: string, task: Task) {
   const taskLists = await getAllTaskLists(token).then((res) => res.items);
   const categoryId: string = taskLists
@@ -97,26 +65,13 @@ export function TasksPage() {
   const token = session?.provider_token as string;
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  //   useEffect(() => {
-  //     async function fetchTasks() {
-  //       try {
-  //         const allTasks = sampleTasks;
-  //         console.log(allTasks);
-  //         setTasks(allTasks);
-  //       } catch (error) {
-  //         console.error("Error fetching tasks:", error);
-  //       }
-  //     }
-
-  //     fetchTasks();
-  //   }, []); // The empty dependency array means this useEffect runs once when the component mounts
   console.log(tasks);
   return (
     <div className="container mx-auto mt-6 p-4">
       <div className="grid grid-cols-2 gap-4">
         {}
         <div>
-          <TasksGrid tasks={tasks}></TasksGrid>
+          <TasksGrid tasks={tasks} setTasks={setTasks}></TasksGrid>
         </div>
 
         {/* Right Side - Form */}
