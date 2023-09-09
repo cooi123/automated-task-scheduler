@@ -3,5 +3,5 @@ export type Task = {
     tag: string
     urgency: 'High' | 'Medium' | 'Low'
     due: Date
-    timeToComplete: number
+    estimateTimeToComplete: number
 }
