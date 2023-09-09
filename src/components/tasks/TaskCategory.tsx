@@ -1,37 +1,31 @@
 import React from "react";
 import TaskCard from "./TaskCardView";
 import {Task} from "../../types/types";
-interface TaskListProps {
+type TasksGridProps = {
   tasks: Task[];
-  category: string; // Filter by this category
-}
+};
+function TasksGrid({tasks}: TasksGridProps) {
+  // Group tasks by category
+  const groupedByCategory = tasks.reduce((acc, task) => {
+    if (!acc[task.category]) {
+      acc[task.category] = [];
+    }
+    acc[task.category].push(task);
+    return acc;
+  }, {} as Record<string, Task[]>);
 
-export function TaskCategory({tasks, category}: TaskListProps) {
-  const filteredAndSortedTasks = tasks
-    .filter((task) => task.tag === category)
-    .sort((a, b) => getUrgencyValue(a.urgency) - getUrgencyValue(b.urgency));
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-row">
-        <h1 className="text-3xl font-bold">Work</h1>
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          Add Task
-        </button>
-      </div>
-      {filteredAndSortedTasks.map((task) => (
-        <TaskCard task={task} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Object.entries(groupedByCategory).map(([category, categoryTasks]) => (
+        <div key={category}>
+          <h2 className="text-2xl font-semibold mb-4">{category}</h2>
+          {categoryTasks.map((task) => (
+            <TaskCard key={task.title} task={task} />
+          ))}
+        </div>
       ))}
     </div>
   );
 }
 
-const getUrgencyValue = (urgency: "High" | "Medium" | "Low") => {
-  switch (urgency) {
-    case "High":
-      return 3;
-    case "Medium":
-      return 2;
-    case "Low":
-      return 1;
-  }
-};
+export default TasksGrid;

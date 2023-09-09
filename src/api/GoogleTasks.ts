@@ -1,7 +1,8 @@
 import { GoogleTask } from "../types/googleapitypes";
 
-const url = "https://www.googleapis.com/tasks/v1/users/@me/lists";
 export async function getAllTaskLists(token: string) {
+    const url = "https://www.googleapis.com/tasks/v1/users/@me/lists";
+
     const taskLists = await fetch(
         url,
         {
@@ -18,7 +19,7 @@ export async function getAllTaskLists(token: string) {
 
 const getTaskURL = (tasklistId: string) => `https://tasks.googleapis.com/tasks/v1/lists/${tasklistId}/tasks`
 
-export async function getAllTasks(token: string, tasklistId: string) {
+export async function getAllTasksFromCategory(token: string, tasklistId: string) {
     const tasks = await fetch(
         getTaskURL(tasklistId),
         {
@@ -46,4 +47,17 @@ export async function createTasks(token: string, tasklistId: string, task: Googl
     )
         .then((res) => res.json());
     return tasks;
+}
+
+export async function createTasksList(token: string, title: string) {
+    const tasks = await fetch(
+        "https://tasks.googleapis.com/tasks/v1/users/@me/lists", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: title })
+    }
+    ).then((res) => res.json())
+    return tasks
 }
