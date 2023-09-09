@@ -1,7 +1,7 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
 import TaskCard from "../components/tasks/TaskCardView";
-import {Task} from "../types/types";
-import {TaskCategory} from "../components/tasks/TaskCategory";
+import {Task, TaskList, sampleTasks} from "../types/types";
+import TasksGrid from "../components/tasks/TaskCategory";
 import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
 import {getFutureEvents, scheduleEvent} from "../api/GoogleCalendar";
 import {GoogleEvent, GoogleTask, GoogleTaskList} from "../types/googleapitypes";
@@ -12,8 +12,9 @@ import {
   createTasks,
 } from "../api/GoogleTasks";
 import {get} from "http";
+import TaskForm from "../components/tasks/TaskForm";
 
-async function submitTasks(token: string) {
+async function submitTasks(token: string, task: Task[]) {
   const events = await getFutureEvents(token);
   console.log(events);
   const simplifiedEvents: GoogleEvent[] = events.map((event: any) => ({
@@ -22,8 +23,9 @@ async function submitTasks(token: string) {
     start: event.start,
     end: event.end,
   }));
-  //   const response = await sendGPT(sampleTasks, simplifiedEvents);
-  //   console.log(response);
+  const response = await sendGPT(task, simplifiedEvents);
+  console.log(response);
+  insertEventToCalendar(token, response);
 }
 
 async function insertEventToCalendar(token: string, events: GoogleEvent[]) {
@@ -43,7 +45,7 @@ async function getAllTasks(token: string) {
   );
   const tasks = await Promise.all(convertToCategory);
   console.log(tasks);
-  const categorisedTask = tasks.flatMap((task, index) =>
+  const categorisedTask: Task[] = tasks.flatMap((task, index) =>
     task.items.map((item: any) => {
       const additionalInfo = item.notes
         ? {
@@ -60,7 +62,7 @@ async function getAllTasks(token: string) {
       };
     })
   );
-  console.log(categorisedTask);
+  return await categorisedTask;
 }
 
 export async function addTask(token: string, task: Task) {
@@ -84,19 +86,51 @@ export async function addTask(token: string, task: Task) {
 export function TasksPage() {
   const session = useSession();
   const token = session?.provider_token as string;
-  return (
-    <div>
-      {/* <TaskCategory tasks={sampleTasks} category="Personal" />
-      <TaskCategory tasks={sampleTasks} category="Family" />
-      <TaskCategory tasks={sampleTasks} category="Work" /> */}
+  const [tasks, setTasks] = useState<Task[]>([]);
 
-      <button
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={() => getAllTasks(token)}
-      >
-        {" "}
-        send to gpt{" "}
-      </button>
+  //   useEffect(() => {
+  //     async function fetchTasks() {
+  //       try {
+  //         const allTasks = sampleTasks;
+  //         console.log(allTasks);
+  //         setTasks(allTasks);
+  //       } catch (error) {
+  //         console.error("Error fetching tasks:", error);
+  //       }
+  //     }
+
+  //     fetchTasks();
+  //   }, []); // The empty dependency array means this useEffect runs once when the component mounts
+
+  const [isFormOpen, setFormOpen] = useState(false); // control the collapsible state of the form
+  console.log(tasks);
+  return (
+    <div className="container mx-auto mt-6 p-4">
+      <div className="grid grid-cols-2 gap-4">
+        {}
+        <div>
+          <TasksGrid tasks={tasks}></TasksGrid>
+        </div>
+
+        {/* Right Side - Form */}
+        <div>
+          <button
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-600"
+            onClick={() => setFormOpen(!isFormOpen)}
+          >
+            {isFormOpen ? "Hide Form" : "Show Form"}
+          </button>
+
+          {/* Conditional rendering of the form */}
+          {isFormOpen && <TaskForm setTasks={setTasks} />}
+        </div>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-600"
+          onClick={() => submitTasks(token, tasks)}
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 }
