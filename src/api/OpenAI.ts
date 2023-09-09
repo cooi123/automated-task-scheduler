@@ -24,11 +24,10 @@ export async function sendGPT(tasks: Task[], events: GoogleEvent[]) {
     tag: string
     urgency: 'High' | 'Medium' | 'Low'
     due: Date
-    estimateTimeToComplete: number
+    estimatHourToComplete: number
 }, and a list of already scheduled events in the following schema Event={
     summary: string
     description?: string,
-    title: string,
     notes: string,
     start: {
         dateTime: Date,
@@ -39,9 +38,10 @@ export async function sendGPT(tasks: Task[], events: GoogleEvent[]) {
         timeZone: string
     }
 
-}. You are to schedule the tasks to fit into the schedule. To decide the most optimal schedule, take into account the due date, the urgency, and the estimated time to complete. 
+}. Put the task title in the summary field on the event scema You are to schedule the tasks to fit into the schedule. To decide the most optimal schedule, take into account the due date, the urgency, and the estimated time to complete. 
+Make sure to spread out the tasks so that the person is not overwhelmed. 
 The events are already scheduled and cannot be changed. You are allowed to split a single task into multiple events on the schudule as long as the total time to complete the task is less than the estimated time to complete.
-Be sure to also take into account the person scheule, do not scheule task on unreasonable time after midnight or before 6am. Strictly return a list of events that needed to be scheuled to complete the tasks following the Event schema 
+Be sure to also take into account the person scheule, do not scheule task on unreasonable time after midnight or before 6am. Strictly only return a list of events that needed to be scheuled to complete the tasks following the Event schema 
 provided above in a valid json format. """Insert scheule here"""
         `
     }
@@ -50,6 +50,7 @@ provided above in a valid json format. """Insert scheule here"""
         model: 'gpt-3.5-turbo',
     });
     const response = await completion.choices[0].message.content
+    console.log(response)
     const eventsToBeScheduled: GoogleEvent[] = response ? JSON.parse(response) : []
     return eventsToBeScheduled
 }

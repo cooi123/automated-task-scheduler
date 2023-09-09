@@ -10,11 +10,13 @@ import {
   getAllTaskLists,
   getAllTasksFromCategory,
   createTasks,
+  createTasksList,
 } from "../api/GoogleTasks";
 import {get} from "http";
 import TaskForm from "../components/tasks/TaskForm";
 
-async function submitTasks(token: string, task: Task[]) {
+async function submitTasks(token: string, task: Task[], setTasks: any) {
+  const taskRes = task.map((task) => addTask(token, task));
   const events = await getFutureEvents(token);
   console.log(events);
   const simplifiedEvents: GoogleEvent[] = events.map((event: any) => ({
@@ -26,11 +28,11 @@ async function submitTasks(token: string, task: Task[]) {
   const response = await sendGPT(task, simplifiedEvents);
   console.log(response);
   insertEventToCalendar(token, response);
+  setTasks([]);
 }
 
 async function insertEventToCalendar(token: string, events: GoogleEvent[]) {
-  const res = await scheduleEvent(token, events[0]);
-  console.log(res);
+  events.map((event) => scheduleEvent(token, event));
 }
 
 async function getAllTasks(token: string) {
@@ -67,9 +69,9 @@ async function getAllTasks(token: string) {
 
 export async function addTask(token: string, task: Task) {
   const taskLists = await getAllTaskLists(token).then((res) => res.items);
-  const categoryId: string = taskLists.find(
-    (list: any) => list.title === task.category
-  );
+  const categoryId: string = taskLists
+    ? taskLists.find((list: any) => list.title === task.category)
+    : null;
   const googleTask: GoogleTask = {
     ...task,
     notes: {
@@ -79,7 +81,14 @@ export async function addTask(token: string, task: Task) {
     },
     status: "needsAction",
   };
-
+  if (!categoryId) {
+    const newId = await createTasksList(token, task.category).then(
+      (res) => res.id
+    );
+    console.log("new id " + newId);
+    const res = await createTasks(token, newId, googleTask);
+    return res;
+  }
   const res = await createTasks(token, categoryId, googleTask);
 }
 
@@ -101,8 +110,6 @@ export function TasksPage() {
 
   //     fetchTasks();
   //   }, []); // The empty dependency array means this useEffect runs once when the component mounts
-
-  const [isFormOpen, setFormOpen] = useState(false); // control the collapsible state of the form
   console.log(tasks);
   return (
     <div className="container mx-auto mt-6 p-4">
@@ -114,22 +121,19 @@ export function TasksPage() {
 
         {/* Right Side - Form */}
         <div>
+          {/* Conditional rendering of the form */}
+          {<TaskForm setTasks={setTasks} />}
+        </div>
+        {tasks.length > 0 ? (
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-600"
-            onClick={() => setFormOpen(!isFormOpen)}
+            onClick={() => submitTasks(token, tasks, setTasks)}
           >
-            {isFormOpen ? "Hide Form" : "Show Form"}
+            Submit
           </button>
-
-          {/* Conditional rendering of the form */}
-          {isFormOpen && <TaskForm setTasks={setTasks} />}
-        </div>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-600"
-          onClick={() => submitTasks(token, tasks)}
-        >
-          Submit
-        </button>
+        ) : (
+          ""
+        )}
       </div>
     </div>
   );

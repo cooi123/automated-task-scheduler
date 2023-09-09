@@ -48,3 +48,16 @@ export async function createTasks(token: string, tasklistId: string, task: Googl
         .then((res) => res.json());
     return tasks;
 }
+
+export async function createTasksList(token: string, title: string) {
+    const tasks = await fetch(
+        "https://tasks.googleapis.com/tasks/v1/users/@me/lists", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: title })
+    }
+    ).then((res) => res.json())
+    return tasks
+}
