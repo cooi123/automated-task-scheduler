@@ -1,5 +1,4 @@
-import { async } from "q";
-import { task } from "../types/googleapitypes";
+import { GoogleTask } from "../types/googleapitypes";
 
 const url = "https://www.googleapis.com/tasks/v1/users/@me/lists";
 export async function getAllTaskLists(token: string) {
@@ -33,7 +32,7 @@ export async function getAllTasks(token: string, tasklistId: string) {
     return tasks;
 }
 
-export async function createTasks(token: string, tasklistId: string, task: task) {
+export async function createTasks(token: string, tasklistId: string, task: GoogleTask) {
     const tasks = await fetch(
         getTaskURL(tasklistId),
         {

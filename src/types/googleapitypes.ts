@@ -1,10 +1,13 @@
-export type task = {
+export type GoogleTask = {
     title: string,
-    notes: string,
+    notes: { tag: string, urgency: string, dueTime: Date, notes: string[] },
     due: Date
+    completed: Date
+    status: 'needsAction' | 'completed'
+
 }
 
-export type event = {
+export type GoogleEvent = {
     summary: string
     description: string,
     title: string,
