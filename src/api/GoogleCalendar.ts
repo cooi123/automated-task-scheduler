@@ -1,4 +1,4 @@
-
+import { GoogleEvent } from "../types/googleapitypes";
 
 const url = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
 export async function getFutureEvents(token: string) {
@@ -21,5 +21,23 @@ export async function getFutureEvents(token: string) {
         console.log(e);
     }
 }
+const postURL = "https://www.googleapis.com/calendar/v3/calendars/primary/events"
+export async function scheduleEvent(token: string, event: GoogleEvent) {
+    try {
+        const res = await fetch(
+            postURL,
+            {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(event)
+            }
+        )
+        return res
+    } catch (e) {
+        console.log(e)
+    }
 
+}
 
