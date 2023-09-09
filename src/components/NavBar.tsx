@@ -1,39 +1,50 @@
-import {useSession, useSupabaseClient} from "@supabase/auth-helpers-react";
-import {handleLogin, handleSignOut} from "../api/SupabaseAuth";
-function NavBar() {
-  const session = useSession();
-  const supabase = useSupabaseClient();
-  console.log(session?.user);
+import React from "react";
+import {useHref} from "react-router";
+
+type NavBarProps = {
+  username?: string;
+  onLogin?: () => void;
+  onLogout?: () => void;
+};
+
+function NavBar({username, onLogin, onLogout}: NavBarProps) {
   return (
-    <nav className="bg-blue-600 p-4 text-white">
+    <nav className="bg-gray-800 text-white p-4">
       <div className="container mx-auto">
         <div className="flex justify-between items-center">
-          <div>
-            <a href="/" className="text-2xl font-bold">
-              To Do
+          {/* Brand or Logo */}
+          <a href="/">
+            <span className="text-xl font-semibold">To Do Scheduler</span>
+          </a>
+
+          {/* Links for Calendar and Tasks */}
+          <div className="space-x-4">
+            <a href="/" className="hover:text-gray-400">
+              Add Tasks
+            </a>
+            <a href="/calendar" className="hover:text-gray-400">
+              Calendar
             </a>
           </div>
-          <div className="flex items-center">
-            {session ? (
-              <a href="/profile" className="ml-4">
-                <span className="ml-2">
-                  {session ? session.user.user_metadata.full_name : ""}
-                </span>
-                <img
-                  src={session.user.user_metadata.avatar_url} // Replace with your user's image path or URL
-                  alt="User"
-                  className="h-8 w-8 rounded-full"
-                />
+
+          {/* Profile & Action Buttons */}
+          <div className="flex items-center space-x-4">
+            {username ? (
+              <>
+                <span className="mr-4">Hello, {username}</span>
                 <button
-                  className="ml-4"
-                  onClick={() => handleSignOut(supabase)}
+                  onClick={onLogout}
+                  className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded"
                 >
                   Logout
                 </button>
-              </a>
+              </>
             ) : (
-              <button className="ml-4" onClick={() => handleLogin(supabase)}>
-                Login{" "}
+              <button
+                onClick={onLogin}
+                className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded"
+              >
+                Login
               </button>
             )}
           </div>
