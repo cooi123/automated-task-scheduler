@@ -38,13 +38,15 @@ function TaskForm({setTasks}: any) {
           <input
             type="text"
             value={task.category}
-            onChange={(e) => setTask({...task, category: e.target.value})}
+            onChange={(e) =>
+              setTask({...task, category: e.target.value.toUpperCase()})
+            }
             className="mt-1 p-2 w-full rounded-md border-2 border-gray-300"
           />
         </div>
 
         <div className="mb-4">
-          <label className="block text-gray-700">Urgency:</label>
+          <label className="block text-gray-700">Priority:</label>
           <select
             value={task.urgency}
             onChange={(e) =>
