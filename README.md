@@ -23,3 +23,5 @@ REACT_APP_GOOGLECALENDAR_URL
 3. `npm start` to run project
 
 4. Go to [Dev server]http://localhost:3000
+
+Visit live site [Here]https://automated-task-scheduler.vercel.app/
