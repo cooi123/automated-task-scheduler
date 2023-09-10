@@ -38,25 +38,34 @@ async function getAllTasks(token: string) {
 }
 
 export function AllTasksPage() {
-  const [allTasks, setAllTasks] = useState<Task[]>(sampleTasks);
-  const session = useSession();
-  const token = session?.provider_token as string;
-  useEffect(() => {
-    async function fetchTasks() {
-      try {
-        const allTasks = await getAllTasks(token);
-        console.log(allTasks);
-        setAllTasks(allTasks);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    }
+  const tasks = localStorage.getItem("TASKS");
+  const [allTasks, setAllTasks] = useState<Task[]>(
+    tasks ? JSON.parse(tasks) : []
+  );
+  // const session = useSession();
+  // const token = session?.provider_token as string;
+  // console.log(token);
+  // useEffect(() => {
+  //   async function fetchTasks() {
+  //     try {
+  //       const allTasks = await getAllTasks(token);
+  //       console.log(allTasks);
+  //       setAllTasks(allTasks);
+  //     } catch (error) {
+  //       console.error("Error fetching tasks:", error);
+  //     }
+  //   }
 
-    fetchTasks();
-  }, []); // The empty dependency array means this useEffect runs once when the component mounts
+  //   fetchTasks();
+  // }, []); // The empty dependency array means this useEffect runs once when the component mounts
+  console.log(allTasks);
   return (
     <div>
       <TasksGrid tasks={allTasks}></TasksGrid>
+      {/* <button onClick={() => getAllTasks(token).then(setAllTasks)}>
+        {" "}
+        get all tasks
+      </button> */}
     </div>
   );
 }

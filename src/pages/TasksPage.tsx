@@ -12,10 +12,19 @@ import {
   createTasks,
   createTasksList,
 } from "../api/GoogleTasks";
-import {get} from "http";
 import TaskForm from "../components/tasks/TaskForm";
 
-async function submitTasks(token: string, task: Task[], setTasks: any) {
+async function submitTasks(
+  token: string,
+  task: Task[],
+  setTasks: any,
+  setIsLoading: any
+) {
+  setIsLoading(true);
+  const tasksFromStorage = localStorage.getItem("TASKS");
+  const allTasks = tasksFromStorage ? JSON.parse(tasksFromStorage) : [];
+  const newTasks = [...allTasks, ...task];
+  localStorage.setItem("TASKS", JSON.stringify(newTasks));
   const taskRes = task.map((task) => addTask(token, task));
   const events = await getFutureEvents(token);
   console.log(events);
@@ -29,6 +38,7 @@ async function submitTasks(token: string, task: Task[], setTasks: any) {
   console.log(response);
   insertEventToCalendar(token, response);
   setTasks([]);
+  setIsLoading(false);
 }
 
 async function insertEventToCalendar(token: string, events: GoogleEvent[]) {
@@ -64,8 +74,7 @@ export function TasksPage() {
   const session = useSession();
   const token = session?.provider_token as string;
   const [tasks, setTasks] = useState<Task[]>([]);
-
-  console.log(tasks);
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div className="container mx-auto mt-6 p-4">
       <div className="grid grid-cols-2 gap-4">
@@ -73,6 +82,14 @@ export function TasksPage() {
         <div>
           <TasksGrid tasks={tasks} setTasks={setTasks}></TasksGrid>
         </div>
+        {isLoading && (
+          <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg flex items-center space-x-3">
+              <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+              <div>Loading...</div>
+            </div>
+          </div>
+        )}
 
         {/* Right Side - Form */}
         <div>
@@ -82,7 +99,7 @@ export function TasksPage() {
         {tasks.length > 0 ? (
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded-md mb-4 hover:bg-blue-600"
-            onClick={() => submitTasks(token, tasks, setTasks)}
+            onClick={() => submitTasks(token, tasks, setTasks, setIsLoading)}
           >
             Submit
           </button>

@@ -12,9 +12,8 @@ import {AllTasksPage} from "./pages/AllTasksPage";
 function App() {
   const session = useSession();
   const supabaseClient = useSupabaseClient();
-
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gray-100">
       <NavBar
         username={session?.user.user_metadata.full_name}
         onLogin={() => handleLogin(supabaseClient)}
