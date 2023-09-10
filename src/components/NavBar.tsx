@@ -13,7 +13,7 @@ function NavBar({username, onLogin, onLogout}: NavBarProps) {
         <div className="flex justify-between items-center">
           {/* Brand or Logo */}
           <a href="/">
-            <span className="text-xl font-semibold">To Do Scheduler</span>
+            <span className="text-xl font-semibold">To Do Transformer</span>
           </a>
 
           {/* Links for Calendar and Tasks */}
