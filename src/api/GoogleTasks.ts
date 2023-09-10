@@ -46,6 +46,7 @@ export async function createTasks(token: string, tasklistId: string, task: Googl
         }
     )
         .then((res) => res.json());
+    console.log("successfully added task")
     return tasks;
 }
 

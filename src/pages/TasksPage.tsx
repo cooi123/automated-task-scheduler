@@ -63,13 +63,14 @@ export async function addTask(token: string, task: Task) {
     },
     status: "needsAction",
   };
+  console.log(categoryId);
   if (!categoryId) {
-    const newId = await createTasksList(token, task.category).then(
-      (res) => res.id
-    );
-    console.log("new id " + newId);
-    const res = await createTasks(token, newId, googleTask);
-    return res;
+    const newId = await createTasksList(token, task.category).then((res) => {
+      const newId = res.id;
+      console.log("new id " + newId);
+      createTasks(token, newId, googleTask);
+    });
+    return;
   }
   const res = await createTasks(token, categoryId, googleTask);
 }
