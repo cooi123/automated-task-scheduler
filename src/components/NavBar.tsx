@@ -1,5 +1,4 @@
 import React from "react";
-import {useHref} from "react-router";
 
 type NavBarProps = {
   username?: string;
