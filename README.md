@@ -25,3 +25,10 @@ REACT_APP_GOOGLECALENDAR_URL
 4. Go to [Dev server]http://localhost:3000
 
 Visit live site [Here]https://automated-task-scheduler.vercel.app/
+
+# To do
+
+1. Google task api get conversion for tasks not created on the app
+2. Google task api post to new category
+3. Generate user calendar dynamically instead of embedding
+4. Persistant tasks data for Task card when switching pages
