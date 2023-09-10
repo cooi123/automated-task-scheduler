@@ -20,6 +20,10 @@ async function submitTasks(
   setTasks: any,
   setIsLoading: any
 ) {
+  if (!token) {
+    alert("Please login first");
+    return;
+  }
   setIsLoading(true);
   const tasksFromStorage = localStorage.getItem("TASKS");
   const allTasks = tasksFromStorage ? JSON.parse(tasksFromStorage) : [];
