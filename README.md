@@ -1,3 +1,8 @@
+# Winner of MACathon 2023 
+
+[DEVPOST](https://devpost.com/software/to-do-transfomer)
+
+
 # automated-task-scheduler
 
 Task scheduler using Open AI and Google calendar
@@ -7,6 +12,8 @@ Uses Supabase for Google OAuth authentication
 Google Task API and Google Calendar API for task and calendar creation
 
 Uses openai chat completion to optimally arrange tasks to fit schedule
+
+# Get Started
 
 To run project
 
